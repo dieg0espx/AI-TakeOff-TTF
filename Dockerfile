@@ -4,6 +4,9 @@ FROM python:3.10
 # Set the working directory inside the container
 WORKDIR /app
 
+# Install system dependencies (Poppler for PDF processing)
+RUN apt update && apt install -y poppler-utils
+
 # Copy the dependencies file and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
