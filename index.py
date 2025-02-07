@@ -22,8 +22,7 @@ app = FastAPI()
 # Enable CORS for React
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
-    allow_credentials=True,
+    allow_origins=["*"],  # Change this to your frontend URL in production
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -62,6 +61,7 @@ def detect_shapes_and_upload(image, filename):
 
 @app.post("/process-pdf/")
 async def process_pdf(file: UploadFile = File(...)):
+    print('PROCESSING PDF ....')
     try:
         pdf_bytes = await file.read()
         images = pdf2image.convert_from_bytes(pdf_bytes, dpi=300)
@@ -92,3 +92,9 @@ async def process_pdf(file: UploadFile = File(...)):
 @app.get("/")
 def read_root():
     return {"message": "Hello, FastAPI is working!"}
+
+
+# ✅ New POST endpoint for greeting
+@app.post("/greet/")
+async def greet(name: str = Form(...)):
+    return {"message": f"Hello, {name}!"}
