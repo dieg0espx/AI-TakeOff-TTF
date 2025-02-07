@@ -87,3 +87,8 @@ async def process_pdf(file: UploadFile = File(...)):
 
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello, FastAPI is working!"}
