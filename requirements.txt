@@ -6,4 +6,7 @@ pillow
 cloudinary
 pdf2image
 pytesseract
-python-multipart  # Add this line
+python-multipart
+requests  # ✅ Needed for fetching files from Google Drive
+poppler-utils  # ✅ Required for pdf2image (Linux)
+poppler  # ✅ Required for pdf2image (Windows/macOS)
