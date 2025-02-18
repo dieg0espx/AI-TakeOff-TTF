@@ -5,14 +5,14 @@ FROM python:3.10
 WORKDIR /app
 
 # Install system dependencies (Poppler for PDF processing)
-RUN apt update && apt install -y poppler-utils
+RUN apt update && apt install -y poppler-utils tesseract-ocr libgl1-mesa-glx
 
-# Copy the dependencies file and install dependencies
+# Copy and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Ensure python-multipart is installed
-RUN pip install --no-cache-dir python-multipart
+# Ensure required packages are installed
+RUN pip install --no-cache-dir python-multipart opencv-python-headless
 
 # Copy the rest of the application code
 COPY . .
