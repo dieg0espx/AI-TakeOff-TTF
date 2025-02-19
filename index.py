@@ -132,7 +132,7 @@ async def process_pdf_from_drive(request: FileRequest):
 
             # Extract text from image
             text = extract_text_from_image(image)
-            logging.info(f"📝 Extracted text from page {i+1}: {text[:100]}...")
+            logging.info(f"📝 Extracted text from page {i+1}: {text[:100]}...")  # Show first 100 characters
 
             # Detect shapes and upload image to Cloudinary
             shape_count, processed_image_url = detect_shapes_and_upload(image, f"{file_id}_page_{i+1}")
@@ -149,10 +149,11 @@ async def process_pdf_from_drive(request: FileRequest):
             })
 
         except Exception as img_error:
-            logging.error(f"⚠️ Error processing page {i+1}: {img_error}")
+            logging.error(f"⚠️ Error processing page {i+1}: {img_error}", exc_info=True)  # Log full traceback
             continue  # Skip problematic pages
 
     logging.info("✅ PDF processing completed successfully!")
+
     return {"success": True, "results": results}
 
 @app.get("/")
