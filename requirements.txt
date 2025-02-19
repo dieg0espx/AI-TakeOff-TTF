@@ -9,3 +9,5 @@ pytesseract
 python-multipart
 requests
 pydantic  # ✅ Needed for BaseModel
+PyPDF2
+
