@@ -71,8 +71,8 @@ def detect_shapes_and_upload(image, filename):
     # Return Cloudinary URL
     return len(contours), response["secure_url"]
 
-@app.post("/process-pdf/")
-async def process_pdf_from_drive(request: FileRequest):
+# @app.post("/process-pdf/")
+# async def process_pdf_from_drive(request: FileRequest):
     file_id = request.file_id  # Extract file ID from request
     print(f"Downloading file from Google Drive with ID: {file_id}")
 
@@ -109,6 +109,52 @@ async def process_pdf_from_drive(request: FileRequest):
 
     except Exception as e:
         return {"success": False, "error": f"Error processing PDF: {str(e)}"}
+
+@app.post("/process-pdf/")
+async def process_pdf_from_drive(request: FileRequest):
+    file_id = request.file_id
+    print(f"📥 Downloading file from Google Drive with ID: {file_id}")
+
+    # Fetch file from Google Drive
+    response = requests.get(GOOGLE_DRIVE_DOWNLOAD_URL + file_id, stream=True)
+
+    if response.status_code != 200:
+        print("❌ Failed to download file")
+        return {"success": False, "error": "Failed to download file from Google Drive"}
+
+    # Save the PDF locally (for debugging)
+    pdf_path = f"/tmp/{file_id}.pdf"
+    with open(pdf_path, "wb") as f:
+        f.write(response.content)
+
+    print(f"✅ PDF downloaded successfully: {pdf_path}, Size: {os.path.getsize(pdf_path)} bytes")
+
+    try:
+        # Convert PDF to images
+        images = pdf2image.convert_from_path(pdf_path, dpi=300)
+
+        results = []
+        for i, image in enumerate(images):
+            try:
+                text = extract_text_from_image(image)
+                shape_count, processed_image_url = detect_shapes_and_upload(image, f"{file_id}_page_{i+1}")
+
+                results.append({
+                    "page": i + 1,
+                    "text": text,
+                    "shape_count": shape_count,
+                    "processed_image_url": processed_image_url,
+                })
+            except Exception as img_error:
+                print(f"❌ Error processing page {i+1}: {img_error}")
+                continue
+
+        return {"success": True, "results": results}
+
+    except Exception as e:
+        print(f"❌ Error processing PDF: {e}")
+        return {"success": False, "error": str(e)}
+
 
 @app.get("/")
 def read_root():
