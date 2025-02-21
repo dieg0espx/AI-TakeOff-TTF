@@ -137,7 +137,7 @@ def count_specific_paths(svg_path):
         if style_attr and style_attr == shores_style:
             counts["shores"] += 1
 
-    print(f"Count Results: Frames 6x4 = {counts['frames6x4']}, Shores = {counts['shores'] / 6}")
+    print(f"Count Results: Scaffold 6x4 = {counts['frames6x4']}, Shores = {counts['shores'] / 6}")
     return counts
 
 # API endpoint to process PDF
