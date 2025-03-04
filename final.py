@@ -66,7 +66,7 @@ async def send_log_and_print(message):
 
 # Convertio API conversion functions
 async def start_conversion():
-    await send_log_and_print("🔄 Starting file conversion to SVG format...")
+    await send_log_and_print("Starting file conversion to SVG format...")
     url = "https://api.convertio.co/convert"
     data = {
         "apikey": API_KEY,
@@ -77,55 +77,55 @@ async def start_conversion():
     result = response.json()
     if result.get('code') == 200:
         conversion_id = result['data']['id']
-        await send_log_and_print(f"✅ Conversion started successfully with ID: {conversion_id}")
+        await send_log_and_print(f"Conversion started successfully with ID: {conversion_id}")
         return conversion_id
     else:
         raise Exception(f"❌ Error starting conversion: {result.get('error')}")
 
 async def upload_file(conv_id, file_path):
-    await send_log_and_print(f"📤 Uploading file with conversion ID: {conv_id}...")
+    await send_log_and_print(f"Uploading file with conversion ID: {conv_id}...")
     upload_url = f"https://api.convertio.co/convert/{conv_id}/upload"
     with open(file_path, 'rb') as file:
         response = requests.put(upload_url, data=file)
         result = response.json()
         if result.get('code') == 200:
-            await send_log_and_print("✅ File uploaded successfully.")
+            await send_log_and_print("File uploaded successfully.")
         else:
             raise Exception(f"❌ File upload failed: {result.get('error')}")
 
 async def check_status(conv_id):
-    await send_log_and_print(f"⏳ Checking conversion status for ID: {conv_id}...")
+    await send_log_and_print(f"Checking conversion status for ID: {conv_id}...")
     status_url = f"https://api.convertio.co/convert/{conv_id}/status"
     while True:
         response = requests.get(status_url)
         result = response.json()
         if 'data' in result:
             status = result['data'].get('step')
-            await send_log_and_print(f"🔍 Current conversion status: {status}")
+            await send_log_and_print(f" Current conversion status: {status}")
             if status == "finish" and result['data'].get('output'):
-                await send_log_and_print("✅ Conversion finished successfully. Preparing to download.")
+                await send_log_and_print("Conversion finished successfully. Preparing to download.")
                 return result['data']['output']['url']
             elif status in ["failed", "error"]:
                 raise Exception("❌ Conversion failed.")
         await asyncio.sleep(5)
 
 async def download_file(download_url, output_path):
-    await send_log_and_print("📥 Downloading converted SVG file...")
+    await send_log_and_print("Downloading converted SVG file...")
     response = requests.get(download_url)
     with open(output_path, 'wb') as file:
         file.write(response.content)
-    await send_log_and_print(f"✅ Downloaded file saved to {output_path}")
+    await send_log_and_print(f"Downloaded file saved to {output_path}")
 
 # Extract text from PDF
 async def extract_text_from_pdf(pdf_path):
-    await send_log_and_print(f"📝 Extracting text from PDF: {pdf_path}")
+    await send_log_and_print(f"Extracting text from PDF: {pdf_path}")
     text = []
     images = convert_from_path(pdf_path)
     for i, image in enumerate(images):
-        await send_log_and_print(f"🖼️ Extracting text from page {i + 1}...")
+        await send_log_and_print(f"Extracting text from page {i + 1}...")
         page_text = pytesseract.image_to_string(image)
         text.append(page_text)
-    await send_log_and_print("✅ Text extraction from PDF completed.")
+    await send_log_and_print("Text extraction from PDF completed.")
     return text, images
 
 # Upload images to Cloudinary
@@ -144,7 +144,7 @@ def upload_image_to_cloudinary(image, file_id, page_number):
 
 # SVG pattern counting function
 async def count_specific_paths(svg_path):
-    await send_log_and_print(f"🔍 Analyzing SVG for scaffolding patterns: {svg_path}")
+    await send_log_and_print(f"Analyzing SVG for scaffolding patterns: {svg_path}")
     parser = etree.XMLParser(remove_blank_text=True)
     tree = etree.parse(svg_path, parser)
     root = tree.getroot()
@@ -163,14 +163,14 @@ async def count_specific_paths(svg_path):
         if style_attr and style_attr == shores_style:
             counts["shores"] += 1
 
-    await send_log_and_print(f"✅ Shape count completed: Scaffold 6x4 = {counts['frames6x4']}, Shores = {counts['shores'] / 6}")
+    print(f"Shape count completed: Scaffold 6x4 = {counts['frames6x4']}, Shores = {counts['shores'] / 6}")
     return counts
 
 # API endpoint to process PDF
 @app.post("/process-pdf/")
 async def process_pdf_from_drive(request: FileRequest):
     file_id = request.file_id
-    await send_log_and_print(f"📩 Received request to process PDF with ID: {file_id}")
+    await send_log_and_print(f"Received request to process PDF with ID: {file_id}")
 
     response = requests.get(GOOGLE_DRIVE_DOWNLOAD_URL + file_id)
     if response.status_code != 200:
@@ -182,7 +182,7 @@ async def process_pdf_from_drive(request: FileRequest):
         pdf_path = f"{file_id}.pdf"
         with open(pdf_path, 'wb') as f:
             f.write(response.content)
-        await send_log_and_print(f"✅ PDF downloaded and saved as {pdf_path}")
+        await send_log_and_print(f"PDF downloaded and saved as {pdf_path}")
 
         # Convert to SVG
         conv_id = await start_conversion()
@@ -208,7 +208,7 @@ async def process_pdf_from_drive(request: FileRequest):
 
     for i, (text, image) in enumerate(zip(extracted_text, images)):
         try:
-            await send_log_and_print(f"📤 Uploading processed image for page {i + 1} to Cloudinary...")
+            await send_log_and_print(f"Uploading processed image for page {i + 1} to Cloudinary...")
             processed_image_url = upload_image_to_cloudinary(image, file_id, i + 1)
 
             results.append({
@@ -216,7 +216,7 @@ async def process_pdf_from_drive(request: FileRequest):
                 "text": text.strip(),
                 "shape_count": {
                     "Scaffold6x4": counts["frames6x4"],
-                    "PostShores": counts["shores"] / 6
+                    "Shores": counts["shores"] / 6
                 },
                 "file_name": f"{file_id}.pdf",
                 "type": "application/pdf",
@@ -227,7 +227,7 @@ async def process_pdf_from_drive(request: FileRequest):
             await send_log_and_print(f"❌ Error processing page {i + 1}: {img_error}")
             continue  # Skip problematic pages
 
-    await send_log_and_print("✅ All pages processed successfully.")
+    await send_log_and_print("All pages processed successfully.")
     return {"success": True, "results": results}
 
 @app.get("/")

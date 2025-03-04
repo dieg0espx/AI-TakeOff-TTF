@@ -1,102 +1,236 @@
+# START SERVER : uvicorn final:app --host 0.0.0.0 --port 8000 --reload
+
 import os
+import requests
+import asyncio
+from io import BytesIO
+from lxml import etree
+from PIL import Image
+import cloudinary
+import cloudinary.uploader
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from pdf2image import convert_from_path
-from PIL import Image, ImageDraw
-import numpy as np
-import cv2
 import pytesseract
 
-# Convert hex color to HSV
-def hex_to_hsv(hex_color):
-    hex_color = hex_color.lstrip("#")
-    rgb_color = tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
-    bgr_color = np.uint8([[rgb_color[::-1]]])  # Convert RGB to BGR for OpenCV
-    hsv_color = cv2.cvtColor(bgr_color, cv2.COLOR_BGR2HSV)[0][0]
-    return hsv_color
+# Global list to store connected WebSocket clients
+connected_clients = []
 
-# Convert PDF to images
-def convert_pdf_to_images(input_pdf_path, output_folder, dpi=300):
-    pages = convert_from_path(input_pdf_path, dpi=dpi)
-    os.makedirs(output_folder, exist_ok=True)
-    image_paths = []
-    for i, page in enumerate(pages):
-        image_path = os.path.join(output_folder, f"page_{i+1}.png")
-        page.save(image_path, "PNG")
-        image_paths.append(image_path)
-    return image_paths
+# Configure FastAPI
+app = FastAPI()
 
-# Remove text and numbers using OCR (focused only on alphanumeric)
-def remove_text_and_numbers(image_path):
-    image = Image.open(image_path).convert("RGB")
-    draw = ImageDraw.Draw(image)
-    text_boxes = pytesseract.image_to_data(image, output_type=pytesseract.Output.DICT)
+# Enable CORS for React
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-    # Only remove alphanumeric characters
-    for i in range(len(text_boxes["text"])):
-        text = text_boxes["text"][i]
-        if any(char.isalnum() for char in text):  # Detects letters/numbers
-            (x, y, w, h) = (text_boxes["left"][i], text_boxes["top"][i],
-                            text_boxes["width"][i], text_boxes["height"][i])
-            draw.rectangle([x, y, x + w, y + h], fill=(255, 255, 255))
+# Configure Cloudinary
+cloudinary.config(
+    cloud_name="dvord9edi",
+    api_key="323184262698784",
+    api_secret="V92mnHScgdYhjeQMWI5Dw63e8Fg"
+)
 
-    image.save(image_path)
+# Google Drive download URL
+GOOGLE_DRIVE_DOWNLOAD_URL = "https://drive.google.com/uc?export=download&id="
+API_KEY = "173f4a190c64bbac2be2a7a043da70c0"
 
-# Remove specific colors and preserve black lines
-def keep_only_black_elements(image_path, hex_colors):
-    image = cv2.imread(image_path)
-    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+# Request body model
+class FileRequest(BaseModel):
+    file_id: str
 
-    # Define color ranges with a tighter tolerance
-    tolerance = 15
-    mask = np.zeros(image.shape[:2], dtype=np.uint8)  # Empty mask to keep black elements
+# WebSocket endpoint for real-time console logs
+@app.websocket("/ws/logs")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    connected_clients.append(websocket)
+    try:
+        while True:
+            await websocket.receive_text()  # Keep connection alive
+    except WebSocketDisconnect:
+        connected_clients.remove(websocket)
 
-    # Remove target colors
-    for hex_color in hex_colors:
-        hsv_color = hex_to_hsv(hex_color)
-        lower_bound = np.array([max(0, hsv_color[0] - tolerance), 50, 50])
-        upper_bound = np.array([min(179, hsv_color[0] + tolerance), 255, 255])
+# Send logs to all connected WebSocket clients
+async def send_log_to_clients(log_message):
+    for client in connected_clients:
+        await client.send_text(log_message)
 
-        # Create mask for unwanted colors
-        color_mask = cv2.inRange(hsv, lower_bound, upper_bound)
-        mask = cv2.bitwise_or(mask, color_mask)
+# Log message to console and WebSocket clients
+async def send_log_and_print(message):
+    print(message)  # Log to console
+    await send_log_to_clients(message)
 
-    # Preserve black lines by using edge detection
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    edges = cv2.Canny(gray, threshold1=50, threshold2=150)
+# Convertio API conversion functions
+async def start_conversion():
+    await send_log_and_print("Starting file conversion to SVG format...")
+    url = "https://api.convertio.co/convert"
+    data = {
+        "apikey": API_KEY,
+        "input": "upload",
+        "outputformat": "svg"
+    }
+    response = requests.post(url, json=data)
+    result = response.json()
+    if result.get('code') == 200:
+        conversion_id = result['data']['id']
+        await send_log_and_print(f"Conversion started successfully with ID: {conversion_id}")
+        return conversion_id
+    else:
+        raise Exception(f"❌ Error starting conversion: {result.get('error')}")
 
-    # Invert mask to preserve black elements
-    inverted_mask = cv2.bitwise_not(mask)
-    result = cv2.bitwise_and(image, image, mask=inverted_mask)
-    result[mask > 0] = [255, 255, 255]  # Replace unwanted colors with white
+async def upload_file(conv_id, file_path):
+    await send_log_and_print(f"Uploading file with conversion ID: {conv_id}...")
+    upload_url = f"https://api.convertio.co/convert/{conv_id}/upload"
+    with open(file_path, 'rb') as file:
+        response = requests.put(upload_url, data=file)
+        result = response.json()
+        if result.get('code') == 200:
+            await send_log_and_print("File uploaded successfully.")
+        else:
+            raise Exception(f"❌ File upload failed: {result.get('error')}")
 
-    # Overlay black lines
-    result[edges > 0] = [0, 0, 0]  # Preserve detected black edges
+async def check_status(conv_id):
+    await send_log_and_print(f"Checking conversion status for ID: {conv_id}...")
+    status_url = f"https://api.convertio.co/convert/{conv_id}/status"
+    while True:
+        response = requests.get(status_url)
+        result = response.json()
+        if 'data' in result:
+            status = result['data'].get('step')
+            await send_log_and_print(f" Current conversion status: {status}")
+            if status == "finish" and result['data'].get('output'):
+                await send_log_and_print("Conversion finished successfully. Preparing to download.")
+                return result['data']['output']['url']
+            elif status in ["failed", "error"]:
+                raise Exception("❌ Conversion failed.")
+        await asyncio.sleep(5)
 
-    cv2.imwrite(image_path, result)
+async def download_file(download_url, output_path):
+    await send_log_and_print("Downloading converted SVG file...")
+    response = requests.get(download_url)
+    with open(output_path, 'wb') as file:
+        file.write(response.content)
+    await send_log_and_print(f"Downloaded file saved to {output_path}")
 
-# Convert images back to PDF
-def images_to_pdf(image_paths, output_pdf_path):
-    images = [Image.open(path).convert("RGB") for path in image_paths]
-    images[0].save(output_pdf_path, save_all=True, append_images=images[1:])
+# Extract text from PDF
+async def extract_text_from_pdf(pdf_path):
+    await send_log_and_print(f"Extracting text from PDF: {pdf_path}")
+    text = []
+    images = convert_from_path(pdf_path)
+    for i, image in enumerate(images):
+        await send_log_and_print(f"Extracting text from page {i + 1}...")
+        page_text = pytesseract.image_to_string(image)
+        text.append(page_text)
+    await send_log_and_print("Text extraction from PDF completed.")
+    return text, images
 
-# Main function to process the PDF
-def process_pdf(input_pdf, output_pdf):
-    output_folder = "pdf_images"
-    target_colors = ["#F7DE7F", "#D03625", "#3B58FF", "#A9F027"]
+# Upload images to Cloudinary
+def upload_image_to_cloudinary(image, file_id, page_number):
+    img_bytes = BytesIO()
+    image.save(img_bytes, format="JPEG")
+    img_bytes.seek(0)
 
-    # Step 1: Convert PDF to images
-    image_paths = convert_pdf_to_images(input_pdf, output_folder)
+    response = cloudinary.uploader.upload(
+        img_bytes,
+        folder="takeOff",
+        public_id=f"{file_id}_page_{page_number}",
+        overwrite=True
+    )
+    return response["secure_url"]
 
-    # Step 2: Remove specific colored elements and text/numbers
-    for image_path in image_paths:
-        remove_text_and_numbers(image_path)
-        keep_only_black_elements(image_path, target_colors)
+# SVG pattern counting function
+async def count_specific_paths(svg_path):
+    await send_log_and_print(f"Analyzing SVG for scaffolding patterns: {svg_path}")
+    parser = etree.XMLParser(remove_blank_text=True)
+    tree = etree.parse(svg_path, parser)
+    root = tree.getroot()
+    frames6x4_patterns = ["h 300 l -300,-450 h 300", "l 450,-300 v 300"]
+    shores_style = 'fill:none;stroke:#000000;stroke-width:17;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1'
 
-    # Step 3: Convert cleaned images back to PDF
-    images_to_pdf(image_paths, output_pdf)
-    print(f"Cleaned PDF saved at {output_pdf}")
+    counts = {"frames6x4": 0, "shores": 0}
+    for path in root.xpath("//*[local-name()='path']"):
+        d_attr = path.get("d")
+        style_attr = path.get("style")
+        if d_attr:
+            for pattern in frames6x4_patterns:
+                if pattern in d_attr:
+                    counts["frames6x4"] += 1
+                    break
+        if style_attr and style_attr == shores_style:
+            counts["shores"] += 1
 
-# Example usage
-if __name__ == "__main__":
-    input_pdf = "input.pdf"
-    output_pdf = "cleaned_output.pdf"
-    process_pdf(input_pdf, output_pdf)
+    print(f"Shape count completed: Scaffold 6x4 = {counts['frames6x4']}, Shores = {counts['shores'] / 6}")
+    return counts
+
+# API endpoint to process PDF
+@app.post("/process-pdf/")
+async def process_pdf_from_drive(request: FileRequest):
+    file_id = request.file_id
+    await send_log_and_print(f"Received request to process PDF with ID: {file_id}")
+
+    response = requests.get(GOOGLE_DRIVE_DOWNLOAD_URL + file_id)
+    if response.status_code != 200:
+        error_message = "❌ Failed to download file from Google Drive."
+        await send_log_and_print(error_message)
+        return {"success": False, "error": error_message}
+
+    try:
+        pdf_path = f"{file_id}.pdf"
+        with open(pdf_path, 'wb') as f:
+            f.write(response.content)
+        await send_log_and_print(f"PDF downloaded and saved as {pdf_path}")
+
+        # Convert to SVG
+        conv_id = await start_conversion()
+        await upload_file(conv_id, pdf_path)
+        download_url = await check_status(conv_id)
+        svg_path = f"{file_id}.svg"
+        await download_file(download_url, svg_path)
+
+    except Exception as e:
+        error_message = str(e)
+        await send_log_and_print(f"❌ Error during conversion process: {error_message}")
+        return {"success": False, "error": error_message}
+
+    # Extract text from the PDF and convert images
+    extracted_text, images = await extract_text_from_pdf(pdf_path)
+
+    # Count shapes from SVG
+    counts = await count_specific_paths(svg_path)
+
+    # Prepare result response
+    results = []
+    pdf_size = os.path.getsize(pdf_path)
+
+    for i, (text, image) in enumerate(zip(extracted_text, images)):
+        try:
+            await send_log_and_print(f"Uploading processed image for page {i + 1} to Cloudinary...")
+            processed_image_url = upload_image_to_cloudinary(image, file_id, i + 1)
+
+            results.append({
+                "page": i + 1,
+                "text": text.strip(),
+                "shape_count": {
+                    "Scaffold6x4": counts["frames6x4"],
+                    "Shores": counts["shores"] / 6
+                },
+                "file_name": f"{file_id}.pdf",
+                "type": "application/pdf",
+                "size": pdf_size,
+                "processed_image_url": processed_image_url
+            })
+        except Exception as img_error:
+            await send_log_and_print(f"❌ Error processing page {i + 1}: {img_error}")
+            continue  # Skip problematic pages
+
+    await send_log_and_print("All pages processed successfully.")
+    return {"success": True, "results": results}
+
+@app.get("/")
+async def read_root():
+    await send_log_and_print("🚀 API is up and running!")
+    return {"message": "Hello, FastAPI is working!"}
