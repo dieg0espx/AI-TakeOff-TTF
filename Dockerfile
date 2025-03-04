@@ -17,6 +17,10 @@ COPY . .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Force reinstall WebSocket dependencies
+RUN pip install --no-cache-dir uvicorn[standard] websockets wsproto
+
+
 # Expose the FastAPI port
 EXPOSE 8000
 

@@ -8,6 +8,9 @@ pdf2image
 pytesseract
 python-multipart
 requests
-pydantic  # ✅ Needed for BaseModel
+pydantic
 PyPDF2
 lxml
+uvicorn[standard]
+websockets
+wsproto
