@@ -23,10 +23,13 @@ app = FastAPI()
 # Enable CORS for React
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Allow all origins (or specify your frontend URL)
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],  # Add this to expose WebSocket headers
 )
+
 
 # Configure Cloudinary
 cloudinary.config(
@@ -50,7 +53,8 @@ async def websocket_endpoint(websocket: WebSocket):
     connected_clients.append(websocket)
     try:
         while True:
-            await websocket.receive_text()  # Keep connection alive
+            data = await websocket.receive_text()  # Echo received messages
+            await websocket.send_text(f"Echo: {data}")  # Send back data
     except WebSocketDisconnect:
         connected_clients.remove(websocket)
 
