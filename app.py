@@ -1,4 +1,4 @@
-# START SERVER : uvicorn final:app --host 0.0.0.0 --port 8000 --reload
+# START SERVER : uvicorn app:app --host 0.0.0.0 --port 8000 --reload
 
 import os
 import requests
@@ -233,4 +233,4 @@ async def process_pdf_from_drive(request: FileRequest):
 @app.get("/")
 async def read_root():
     await send_log_and_print("🚀 API is up and running!")
-    return {"message": "Hello, FastAPI is working!"}
+    return {"message": "APP.PY"}
