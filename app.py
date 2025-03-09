@@ -160,7 +160,7 @@ async def count_specific_paths(svg_path):
 
     shores_style = 'fill:none;stroke:#000000;stroke-width:17;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1'
 
-    shores_no4_patterns = [
+    shores_box = [
         # Original variations
         "h 60 v -61 h -60 v 61", "h 61 v -60 h -61 v 60",
         "h -60 v 61 h 60 v -61", "h -61 v 60 h 61 v -60",
@@ -195,7 +195,7 @@ async def count_specific_paths(svg_path):
     ]
 
 
-    counts = {"frames6x4": 0, "shores": 0, "shores_no4": 0}
+    counts = {"frames6x4": 0, "shores": 0, "shores_box": 0}
 
     for path in root.xpath("//*[local-name()='path']"):
         d_attr = path.get("d")
@@ -206,15 +206,15 @@ async def count_specific_paths(svg_path):
                 if pattern in d_attr:
                     counts["frames6x4"] += 1
                     break
-            for pattern in shores_no4_patterns:
+            for pattern in shores_box:
                 if pattern in d_attr:
-                    counts["shores_no4"] += 1
+                    counts["shores_box"] += 1
                     break
         
         if style_attr and style_attr == shores_style:
             counts["shores"] += 1
 
-    print(f"Shape count completed: Scaffold 6x4 = {counts['frames6x4']}, Shores = {counts['shores'] / 6}, ShoresNo4 = {counts['shores_no4']}")
+    print(f"Shape count completed: Scaffold 6x4 = {counts['frames6x4']}, Shores = {counts['shores'] / 6}, Shores Box = {counts['shores_box']}")
     return counts
 
 
