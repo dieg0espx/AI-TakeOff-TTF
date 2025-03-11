@@ -2,7 +2,7 @@ import re
 import os
 from PatternComponents import shores_box, shores, frames_6x4, frames_5x4, frames_inBox  # Import patterns
 
-input_svg_path = "local_file.svg"  # Input file
+input_svg_path = "local_file2.svg"  # Input file
 output_svg_path = "modified_image2.svg"  # Output file after modifications
 
 def modify_svg_stroke_and_fill(input_file, output_file, black_stroke="#000000", white_stroke="#202020", new_stroke="#202020", fill_color="#202020"):
