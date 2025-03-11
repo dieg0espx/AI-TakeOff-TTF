@@ -102,7 +102,7 @@ async def upload_file(conv_id, file_path):
         response = requests.put(upload_url, data=file)
         result = response.json()
         if result.get('code') == 200:
-            # await send_log_and_print("File uploaded successfully.")
+            await send_log_and_print("File uploaded successfully.")
         else:
             raise Exception(f"❌ File upload failed: {result.get('error')}")
 
