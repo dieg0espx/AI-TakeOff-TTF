@@ -2,7 +2,7 @@
 FROM python:3.9
 
 # Set working directory
-WORKDIR /app
+WORKDIR /index
 
 # Install system dependencies (Tesseract OCR + Poppler)
 RUN apt-get update && apt-get install -y \
@@ -25,5 +25,5 @@ RUN pip install --no-cache-dir uvicorn[standard] websockets wsproto
 EXPOSE 8000
 
 # Run FastAPI server
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--ws", "auto"]
+CMD ["uvicorn", "index:app", "--host", "0.0.0.0", "--port", "8000", "--ws", "auto"]
 
