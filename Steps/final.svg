@@ -4077,9 +4077,12 @@
            id="path2878"
            style="fill:none;stroke:#4e4e4e;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
            d="m 13925,8576 v -53" /><path
-           id="path_combined"
+           id="path2880"
+           style="fill:none;stroke:#4e4e4e;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+           d="M 14450,8549 V 8249" /><path
+           id="path2882"
            style="fill:none;stroke:#fb7905;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
-           d="M 14450,8549 V 8249 M 14975,8549 V 8249 L 14450,8549" /><text
+           d="m 14975,8549 v -300 l -525,300" /><text
            id="text2886"
            style="font-variant:normal;font-weight:normal;font-size:83.81600189px;font-family:Arial;-inkscape-font-specification:ArialMT;writing-mode:lr-tb;fill:#4e4e4e;fill-opacity:1;fill-rule:nonzero;stroke:none"
            transform="matrix(0.8994141,0,0,-1,14085,8585)"><tspan
