@@ -82,19 +82,17 @@ def find_and_update_related_paths(svg_text, path_id, path_data):
             related_path_data = match.group(1)
             related_coords = extract_coordinates(related_path_data)
             
-            # Check for any matching X or Y coordinates
-            matching_x_coords = path_coords['x'].intersection(related_coords['x'])
+            # Check for any matching Y coordinates
             matching_y_coords = path_coords['y'].intersection(related_coords['y'])
-            
-            if matching_x_coords or matching_y_coords:
+            if matching_y_coords:
                 related_paths.append({
                     'original_id': path_id,
                     'related_id': related_id,
-                    'matching_x': matching_x_coords,
-                    'matching_y': matching_y_coords
+                    'matching_coords': matching_y_coords
                 })
+                # Update both the matching path and the original path to orange
                 modified_svg = update_path_color(modified_svg, related_id)
-                modified_svg = update_path_color(modified_svg, path_id)
+                modified_svg = update_path_color(modified_svg, path_id)  # Update original path too
     
     return related_paths, modified_svg
 
@@ -109,65 +107,20 @@ def process_svg_file(input_file):
         with open(input_file, "r", encoding="utf-8") as file:
             svg_text = file.read()
 
-        orange_pattern = r'<path[^>]*?id="(path\d+)"[^>]*?(?:stroke="#fb7905"|stroke:\s*#fb7905|style="[^"]*?stroke:#fb7905|style="[^"]*?stroke:\s*#fb7905)[^>]*?d="([^"]*)"'
+        # Find paths that are already orange
+        orange_pattern = r'<path[^>]*?id="(path\d+)"[^>]*?(?:stroke="#fb7905"|style="[^"]*?stroke:#fb7905)[^>]*?d="([^"]*)"'
         matches = list(re.finditer(orange_pattern, svg_text))
         modified_svg = svg_text
         
-        print(f"\n{Fore.YELLOW}Checking orange paths and their neighbors:{Style.RESET_ALL}")
+        # Print all orange paths first
+        print(f"\n{Fore.YELLOW}Orange paths found:{Style.RESET_ALL}")
         for match in matches:
-            path_id = match.group(1)
-            path_data = match.group(2)
-            path_coords = extract_coordinates(path_data)
-            
-            base_num = int(path_id.replace('path', ''))
-            smaller_id = f"path{base_num-2}"
-            greater_id = f"path{base_num+2}"
-            
-            print(f"\n{Fore.CYAN}Orange path: path{path_id}{Style.RESET_ALL}")
-            print(f"X coordinates: {path_coords['x']}")
-            print(f"Y coordinates: {path_coords['y']}")
-            
-            # Check smaller neighbor
-            smaller_pattern = re.compile(f'<path[^>]*?id="{smaller_id}"[^>]*?d="([^"]*)"')
-            smaller_match = smaller_pattern.search(svg_text)
-            if smaller_match:
-                smaller_coords = extract_coordinates(smaller_match.group(1))
-                matching_x = path_coords['x'].intersection(smaller_coords['x'])
-                matching_y = path_coords['y'].intersection(smaller_coords['y'])
-                print(f"\nChecking {smaller_id}:")
-                print(f"X coordinates: {smaller_coords['x']}")
-                print(f"Y coordinates: {smaller_coords['y']}")
-                if matching_x or matching_y:
-                    if matching_x:
-                        print(f"{Fore.GREEN}Matching X coordinates: {matching_x}{Style.RESET_ALL}")
-                    if matching_y:
-                        print(f"{Fore.GREEN}Matching Y coordinates: {matching_y}{Style.RESET_ALL}")
-                else:
-                    print(f"{Fore.RED}No matching coordinates{Style.RESET_ALL}")
-            
-            # Check greater neighbor
-            greater_pattern = re.compile(f'<path[^>]*?id="{greater_id}"[^>]*?d="([^"]*)"')
-            greater_match = greater_pattern.search(svg_text)
-            if greater_match:
-                greater_coords = extract_coordinates(greater_match.group(1))
-                matching_x = path_coords['x'].intersection(greater_coords['x'])
-                matching_y = path_coords['y'].intersection(greater_coords['y'])
-                print(f"\nChecking {greater_id}:")
-                print(f"X coordinates: {greater_coords['x']}")
-                print(f"Y coordinates: {greater_coords['y']}")
-                if matching_x or matching_y:
-                    if matching_x:
-                        print(f"{Fore.GREEN}Matching X coordinates: {matching_x}{Style.RESET_ALL}")
-                    if matching_y:
-                        print(f"{Fore.GREEN}Matching Y coordinates: {matching_y}{Style.RESET_ALL}")
-                else:
-                    print(f"{Fore.RED}No matching coordinates{Style.RESET_ALL}")
-            
-            print(f"\n{'-'*50}")
+            print(f"path{match.group(1)}")
+        print(f"\n{'-'*50}")
         
         # Store all matched pairs
         all_matched_pairs = []
-        paths_to_update = set()
+        paths_to_update = set()  # Only store non-orange paths that need updating
         
         # Find matches for each orange path
         for match in matches:
@@ -181,16 +134,18 @@ def process_svg_file(input_file):
                     paths_to_update.add(related['related_id'])
                     all_matched_pairs.append((related['original_id'], related['related_id']))
 
-        # Print all matched pairs and update colors
+        # Print all matched pairs
         if all_matched_pairs:
-            print(f"\n{Fore.GREEN}Matched paths to be updated:{Style.RESET_ALL}")
+            print(f"\n{Fore.GREEN}Matched paths:{Style.RESET_ALL}")
             for pair in sorted(all_matched_pairs):
                 print(f"{pair[0]} + {pair[1]}")
                 
             print("\nUpdating colors...")
+            # Now update only the non-orange paths
             for path_id in paths_to_update:
                 modified_svg = update_path_color(modified_svg, path_id)
             
+            # Save the modified SVG
             output_file = "Step5.svg"
             with open(output_file, "w", encoding="utf-8") as file:
                 file.write(modified_svg)

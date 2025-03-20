@@ -6,6 +6,7 @@ from Step1 import find_and_remove_duplicate_paths
 from Step2 import modify_svg_stroke_and_fill
 from Step3 import add_background_to_svg
 from Step4 import apply_color_to_specific_paths
+from Step5 import process_svg_file
 
 # Initialize colorama
 init()
@@ -67,15 +68,21 @@ def run_all_steps():
         apply_color_to_specific_paths(step3_output, step4_output)
         print_success(f"Step 4 completed: {step4_output} created")
 
+        # Step 5: Find and update matching paths
+        print_step(5, "Finding and updating matching paths")
+        step5_output = "Step5.svg"
+        process_svg_file(step4_output)
+        print_success(f"Step 5 completed: {step5_output} created")
+
         # Cleanup intermediate files
         print_step("Cleanup", "Removing intermediate files")
-        intermediate_files = [step1_output, step2_output, step3_output]  # Removed step4_output
-        for file in intermediate_files:
-            if os.path.exists(file):
-                os.remove(file)
-                print_info(f"Removed intermediate file: {file}")
+        intermediate_files = [step1_output, step2_output, step3_output, step4_output]
+        # for file in intermediate_files:
+        #     if os.path.exists(file):
+        #         os.remove(file)
+        #         print_info(f"Removed intermediate file: {file}")
 
-        print_success(f"Final output saved as: {step4_output}")  # Changed to step4_output
+        print_success(f"Final output saved as: {step5_output}")
 
     except Exception as e:
         print_error(f"Pipeline error: {str(e)}")
