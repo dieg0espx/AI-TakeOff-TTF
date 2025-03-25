@@ -42,7 +42,7 @@ cloudinary.config(
 
 # Google Drive download URL
 GOOGLE_DRIVE_DOWNLOAD_URL = "https://drive.google.com/uc?export=download&id="
-API_KEY = "173f4a190c64bbac2be2a7a043da70c0"
+API_KEY = "2b007718a3f040bb6ac0260982723e48"
 
 # SVG FileName
 input_svg_path = ''

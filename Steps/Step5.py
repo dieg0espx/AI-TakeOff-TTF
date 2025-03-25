@@ -187,6 +187,12 @@ def process_svg_file(input_file):
             for pair in sorted(all_matched_pairs):
                 print(f"{pair[0]} + {pair[1]}")
                 
+            # Write matched pairs to pairsToJoin.txt
+            with open("pairsToJoin.txt", "w", encoding="utf-8") as pairs_file:
+                for pair in sorted(all_matched_pairs):
+                    pairs_file.write(f"{pair[0]},{pair[1]}\n")
+            print(f"{Fore.GREEN}Matched pairs written to pairsToJoin.txt{Style.RESET_ALL}")
+                
             print("\nUpdating colors...")
             for path_id in paths_to_update:
                 modified_svg = update_path_color(modified_svg, path_id)

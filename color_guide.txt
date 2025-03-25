@@ -1,0 +1,35 @@
+SVG Path Color Guide - Based on Step6.py
+
+Current Style Structure:
+style="fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ff0000;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+
+To Change Colors:
+1. Locate the style string in the code (around line 45)
+2. Modify these specific attributes:
+   - stroke:#ff0000 (currently red)
+   - fill:none (currently transparent)
+
+Common Color Examples:
+- Red (current): stroke:#ff0000
+- Orange: stroke:#fb7905
+- Blue: stroke:#0000ff
+- Green: stroke:#00ff00
+
+Important Style Properties to Maintain:
+- stroke-width:7
+- stroke-linecap:round
+- stroke-linejoin:round
+- stroke-miterlimit:10
+- stroke-dasharray:none
+- stroke-opacity:1
+- fill-opacity:1
+- fill-rule:nonzero
+
+Code Location:
+The color is defined in the 'new_path' variable where the merged paths are created.
+
+Example Change:
+To change to orange, modify the style string to:
+style="fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#fb7905;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+
+Note: Keep all other style attributes unchanged to maintain the path's appearance and properties. 
