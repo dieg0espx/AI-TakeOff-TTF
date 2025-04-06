@@ -1,4 +1,5 @@
 import re
+import os
 
 def find_and_remove_duplicate_paths(svg_path, output_path):
     try:
@@ -77,11 +78,11 @@ def find_and_remove_duplicate_paths(svg_path, output_path):
 # Usage
 if __name__ == "__main__":
     try:
-        input_svg = "a_file.svg"
-        output_svg = "step1.svg"
+        # Update the input SVG path to original.svg
+        input_svg = "original.svg"  # Assuming original.svg is one directory up from Steps
+        output_svg = "Step1.svg"
         
         # Check if input file exists
-        import os
         if not os.path.exists(input_svg):
             print(f"Error: Input file '{input_svg}' not found!")
             print(f"Current working directory: {os.getcwd()}")

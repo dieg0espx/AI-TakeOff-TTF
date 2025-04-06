@@ -47,7 +47,7 @@ def print_table(box_count, shores_count, frames6x4_count, frames5x4_count, frame
     total = sum([box_count, shores_count, frames6x4_count, frames5x4_count, framesinbox_count])
     print(f"{'Total elements':<30} {'':^8} {total:>6}\n")
 
-def apply_color_to_specific_paths(input_file, output_file, red="#05fbce", blue="#0000ff", green="#70ff00", pink="#ff00cd", orange="#fb7905"):
+def apply_color_to_specific_paths(input_file, output_file, red="#fb0505", blue="#0000ff", green="#70ff00", pink="#ff00cd", orange="#fb7905"):
     """
     Reads an SVG file and changes colors of specific paths:
     - shores_box paths to red
