@@ -2,9 +2,13 @@ import os
 import sys
 from openai import OpenAI
 import base64
+from dotenv import load_dotenv
 
-# Replace with your actual OpenAI API key
-client = OpenAI(api_key='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')
+# Load environment variables from .env file
+load_dotenv()
+
+# Access the OpenAI API key from environment variables
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 # Path to your local image file
 image_path = "Step7.png"
