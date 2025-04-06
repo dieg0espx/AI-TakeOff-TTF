@@ -1,0 +1,13 @@
+.env
+# Ignore other sensitive files
+*.key
+*.pem
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+# Ignore virtual environment directories
+venv/
+.env/
+# Ignore IDE specific files
+.vscode/
+.idea/ 
