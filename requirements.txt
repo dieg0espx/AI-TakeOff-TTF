@@ -16,3 +16,4 @@ websockets
 wsproto
 cairosvg
 openai
+colorama
