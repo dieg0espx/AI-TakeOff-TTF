@@ -1,5 +1,6 @@
 import re
 import os
+import json
 from colorama import init, Fore, Style
 from PatternComponents import shores_box, frames_6x4, frames_5x4, frames_inBox, shores
 
@@ -47,6 +48,30 @@ def print_table(box_count, shores_count, frames6x4_count, frames5x4_count, frame
     total = sum([box_count, shores_count, frames6x4_count, frames5x4_count, framesinbox_count])
     print(f"{'Total elements':<30} {'':^8} {total:>6}\n")
 
+def append_counts_to_json(box_count, shores_count, frames6x4_count, frames5x4_count, framesinbox_count):
+    # Load existing data from data.json
+    if os.path.exists('data.json'):
+        with open('data.json', 'r') as file:
+            try:
+                data = json.load(file)
+            except json.JSONDecodeError:
+                data = {}
+    else:
+        data = {}
+
+    # Append counts to the data
+    data['objects'] = {
+        'Shores Box': box_count,
+        'Shores': shores_count,
+        'Frames 6x4': frames6x4_count,
+        'Frames 5x4': frames5x4_count,
+        'Frames In Box': framesinbox_count
+    }
+
+    # Write updated data back to data.json
+    with open('data.json', 'w') as file:
+        json.dump(data, file, indent=4)
+
 def apply_color_to_specific_paths(input_file, output_file, red="#fb0505", blue="#0000ff", green="#70ff00", pink="#ff00cd", orange="#fb7905"):
     """
     Reads an SVG file and changes colors of specific paths:
@@ -81,6 +106,15 @@ def apply_color_to_specific_paths(input_file, output_file, red="#fb0505", blue="
 
         # Print table with counts
         print_table(
+            match_count_box,
+            match_count_33_34,
+            match_count_frames6x4,
+            match_count_frames5x4,
+            match_count_framesinBox
+        )
+
+        # Append counts to JSON file
+        append_counts_to_json(
             match_count_box,
             match_count_33_34,
             match_count_frames6x4,
@@ -161,8 +195,6 @@ def apply_color_to_specific_paths(input_file, output_file, red="#fb0505", blue="
         # Write modified content
         with open(output_file, "w", encoding="utf-8") as file:
             file.write(modified_svg_text)
-
-        print(f"Color modifications applied successfully and saved to {output_file}")
 
     except Exception as e:
         print(f"Error applying colors: {e}")

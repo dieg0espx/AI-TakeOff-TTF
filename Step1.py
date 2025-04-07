@@ -25,15 +25,11 @@ def find_and_remove_duplicate_paths(svg_path, output_path):
             else:
                 d_params[d_param] = [path_id]
 
-        # Print duplicates
+        
         found_duplicates = False
-        # print("\nDuplicate paths found:")
         for d_param, ids in d_params.items():
             if len(ids) > 1:
                 found_duplicates = True
-                # print(f"\nDuplicate group with {len(ids)} elements:")
-                # print("IDs:", ", ".join(ids))
-                # print(f"Keeping: {ids[0]}, Removing: {', '.join(ids[1:])}")
 
         if not found_duplicates:
             print("No duplicate paths found")
@@ -65,9 +61,6 @@ def find_and_remove_duplicate_paths(svg_path, output_path):
         # Print line counts for verification
         original_lines = len(svg_text.split('\n'))
         new_lines_count = len(new_lines)
-        # print(f"Original file lines: {original_lines}")
-        # print(f"New file lines: {new_lines_count}")
-        # print(f"Difference: {original_lines - new_lines_count} lines removed")
 
         return modified_svg_text
 

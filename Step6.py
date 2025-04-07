@@ -42,10 +42,14 @@ def convert_svg_to_png():
         if url:
             # Store the URL in a JSON file named data.json
             with open('data.json', 'r+') as json_file:
-                data = json.load(json_file)
+                try:
+                    data = json.load(json_file)
+                except json.JSONDecodeError:
+                    data = {}
                 data['modified_drawing'] = url
                 json_file.seek(0)
                 json.dump(data, json_file, indent=4)
+                json_file.truncate()  # Ensure the file is not left with old data
             print(f"Image uploaded to Cloudinary. URL: {url}")
         else:
             print("Failed to upload image to Cloudinary.")

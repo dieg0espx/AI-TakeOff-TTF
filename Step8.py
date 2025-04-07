@@ -3,6 +3,7 @@ import sys
 from openai import OpenAI
 import base64
 from dotenv import load_dotenv
+import json
 
 # Load environment variables from .env file
 load_dotenv()
@@ -32,7 +33,7 @@ response = client.chat.completions.create(
             "content": [
                 {
                     "type": "text",
-                    "text": "in the image you will find ascaffolding drawing. Please count the amount of elements inside the black areas... return an integer as an answer"
+                    "text": "Please count the amount of red elements... return only a number as an answer"
                 },
                 {
                     "type": "image_url",
@@ -56,5 +57,27 @@ try:
     # Attempt to convert the response to an integer
     result = int(response_text)
     print('Response:', result)
+    
+    # Append the result to data.json
+    if os.path.exists('data.json'):
+        with open('data.json', 'r') as file:
+            try:
+                data = json.load(file)
+            except json.JSONDecodeError:
+                data = {}
+    else:
+        data = {}
+
+    # Ensure 'objects' key exists
+    if 'objects' not in data:
+        data['objects'] = {}
+
+    # Append the result under 'underSlab'
+    data['objects']['underSlab'] = result
+
+    # Write updated data back to data.json
+    with open('data.json', 'w') as file:
+        json.dump(data, file, indent=4)
+
 except ValueError:
     print('The response was not an integer:', response_text)
