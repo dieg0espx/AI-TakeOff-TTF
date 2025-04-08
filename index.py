@@ -15,6 +15,9 @@ import cloudinary
 import cloudinary.uploader
 from cairosvg import svg2png
 from datetime import datetime
+import xml.etree.ElementTree as ET
+from io import BytesIO
+import re
 
 from openai import OpenAI
 import base64
@@ -107,7 +110,67 @@ async def read_file(file_id: str):
             with open('original.svg', 'rb') as svg_file:
                 svg_content = svg_file.read()
             
-            svg2png(bytestring=svg_content, write_to='original.png')
+            # Parse SVG to get dimensions
+            try:
+                tree = ET.parse(BytesIO(svg_content))
+                root = tree.getroot()
+                width = root.get('width')
+                height = root.get('height')
+                
+                # If dimensions are in the SVG, convert them to pixels
+                width_px = None
+                height_px = None
+                
+                if width and height:
+                    # Extract numeric values if units are specified
+                    width_match = re.match(r'(\d+)(px|pt|mm|cm|in)?', width)
+                    height_match = re.match(r'(\d+)(px|pt|mm|cm|in)?', height)
+                    
+                    if width_match:
+                        width_val = float(width_match.group(1))
+                        width_unit = width_match.group(2) or 'px'
+                        # Convert to pixels if needed
+                        if width_unit == 'pt':
+                            width_px = int(width_val * 1.33)
+                        elif width_unit == 'in':
+                            width_px = int(width_val * 96)
+                        elif width_unit == 'cm':
+                            width_px = int(width_val * 37.8)
+                        elif width_unit == 'mm':
+                            width_px = int(width_val * 3.78)
+                        else:
+                            width_px = int(width_val)
+                    
+                    if height_match:
+                        height_val = float(height_match.group(1))
+                        height_unit = height_match.group(2) or 'px'
+                        # Convert to pixels if needed
+                        if height_unit == 'pt':
+                            height_px = int(height_val * 1.33)
+                        elif height_unit == 'in':
+                            height_px = int(height_val * 96)
+                        elif height_unit == 'cm':
+                            height_px = int(height_val * 37.8)
+                        elif height_unit == 'mm':
+                            height_px = int(height_val * 3.78)
+                        else:
+                            height_px = int(height_val)
+                
+                print(f"SVG dimensions: width={width_px}px, height={height_px}px")
+                
+                # Convert SVG to PNG with dimensions
+                if width_px and height_px:
+                    svg2png(bytestring=svg_content, write_to='original.png', 
+                           output_width=width_px, output_height=height_px,
+                           background_color="transparent")
+                else:
+                    # Fallback if dimensions not found
+                    svg2png(bytestring=svg_content, write_to='original.png',
+                           background_color="transparent")
+            except Exception as e:
+                print(f"Error parsing SVG or extracting dimensions: {str(e)}")
+                # Fallback to simple conversion
+                svg2png(bytestring=svg_content, write_to='original.png')
 
             # Upload to Cloudinary
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
