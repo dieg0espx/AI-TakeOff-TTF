@@ -212,7 +212,19 @@ def rewrite_text_with_openai(text):
                     "content": [
                         {
                             "type": "text",
-                            "text": "You are an expert construction communicator. Rewrite the following text extracted from a scaffolding/shoring. avoid using any special characters. \n\n" + text
+                            "text": """
+                                You are an expert construction communicator specializing in scaffolding and shoring documentation. Your task is to rewrite the extracted text from technical drawings into proper, coherent paragraphs.
+                                Please follow these specific guidelines:
+                                1. Format all measurements and dimensions in complete sentences with proper context
+                                2. Organize related information into logical paragraphs
+                                3. Ensure all specifications (dimensions, quantities, materials) are clearly explained
+                                4. Convert isolated measurements into proper sentences explaining what they refer to
+                                5. Maintain technical accuracy while improving readability
+                                6. Avoid any special characters
+
+                                The output should read like a professional construction document that clearly explains all specifications and requirements.
+                                Here is the text to rewrite:
+                                """ + text
                         }
                     ]
                 }
