@@ -29,10 +29,7 @@ def convert_svg_to_png():
             svg_content = svg_file.read()
         
         # Convert to PNG with high resolution
-        svg2png(bytestring=svg_content,
-                write_to='Step6.png',
-                output_width=1920,  # Set width for good resolution
-                output_height=1080)  # Set height for good resolution
+        svg2png(bytestring=svg_content,write_to='Step6.png')  # Set height for good resolution
         
         print("Successfully converted Step5.svg to Step6.png")
         
