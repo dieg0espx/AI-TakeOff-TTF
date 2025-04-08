@@ -61,11 +61,11 @@ def append_counts_to_json(box_count, shores_count, frames6x4_count, frames5x4_co
 
     # Append counts to the data
     data['objects'] = {
-        'Shores Box': box_count,
-        'Shores': shores_count,
-        'Frames 6x4': frames6x4_count,
-        'Frames 5x4': frames5x4_count,
-        'Frames In Box': framesinbox_count
+        'shores_Box': box_count,
+        'shores': shores_count,
+        'frames_6x4': frames6x4_count,
+        'frames_5x4': frames5x4_count,
+        'frames_In_Box': framesinbox_count
     }
 
     # Write updated data back to data.json
