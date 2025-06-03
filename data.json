@@ -1,4 +1,5 @@
 {
+    "extracted_text": "This document pertains to the construction instructions for the shoring plan and details of the second floor suspended slab at the Anderson Commercial 5560 Anderson Way, Vernon, B.C., managed by Valorous Construction Ltd., with the plans drafted by F.T. on August 23, 2024.\n\nFor this construction, two types of slabs are proposed: a consistently recurring 10\" thick slab and an 8\" deep slab. A deeper slab band stretching 20\u201d will be utilized typically, unless explicitly noted otherwise. Each slab will need a down turn beam, measuring 10\u201d x 74\u201d. Notably, no shoring is required under the typical slab unless indicated with a \"%\" for #2 and a \u201c[x]\u201d for a #4 post shore.\n\nThe strength of the suspended slabs is rated at two levels. Slabs of 8\u2033 depth hold a typical load of 150 pounds per square foot. The 20\" deep slab bands are designed to withstand a higher load of up to 300 pounds per square foot.\n\nAlong with the slabs, the construction plan incorporates 4x6 wood joists, provided by TIF Scaffolding. These should not be used for packing or cut short for other purposes. All frames are required to be heavy-duty constructions, measuring 6' high and 4' wide, with a load of 10k per leg and supported by a 7' bracing. Additionally, 3/4\" D. Fir #1 or superior quality plywood has been prescribed.\n\nTimelines and dimensions for the construction process are critical. The length of the 10' beam between beams is divided into four segments at 19.2\" distance, anchored with 2x2x6 wood buildup under the slab. This format recurs at a 12' interval and a 10-4x6 segment, respectively.\n\nBefore the actual concrete pour, a professional engineer's inspection is compulsory as a precautionary measure. It is also reiterated that the contractor must verify all dimensions and elevations before the delivery of necessary equipment.\n\nLastly, it is crucial to lay a continuous 2-2x10 wood mudsill on compacted fill where frame legs will be set outside the building. For more information about the general notes and typical details, refer to Drawing F-1. The final technical specifications, including the instances of deviations and exceptions, will be provided in the revised blueprints. This construction document is to be read together with the architectural and structural drawings to ensure a complete understanding.",
     "objects": {
         "shores_Box": 28,
         "shores": 152,
@@ -6,8 +7,10 @@
         "frames_5x4": 3,
         "frames_In_Box": 11,
         "total_6x4": 108,
-        "output1": "http://res.cloudinary.com/dvord9edi/image/upload/v1748911566/AI-TakeOFF/tklzuwfz8vaotrw1e729.jpg",
+        "output1": "http://res.cloudinary.com/dvord9edi/image/upload/v1748917037/AI-TakeOFF/nst18wn6zqgrswgghnva.jpg",
         "underSlab_6x4": 19,
-        "output2": "http://res.cloudinary.com/dvord9edi/image/upload/v1748911571/AI-TakeOFF/w2uckvpog9totk3atv2q.jpg"
-    }
+        "output2": "http://res.cloudinary.com/dvord9edi/image/upload/v1748917041/AI-TakeOFF/dqrda8ejz9fijn9mhcwl.jpg"
+    },
+    "file_name": "files/original.pdf",
+    "file_size": 415491
 }

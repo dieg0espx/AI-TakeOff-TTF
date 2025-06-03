@@ -3,6 +3,17 @@ import os
 from ultralytics import YOLO
 import cloudinary
 import cloudinary.uploader
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Configure Cloudinary using environment variables
+cloudinary.config(
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv('CLOUDINARY_API_KEY'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET')
+)
 
 # Convert SVG to PNG
 input_svg = "Step8.svg"
@@ -107,13 +118,6 @@ cv2.imwrite(output_path, image)
 print(f"✅ Processed image saved as: {output_path}")
 print("Counts:", class_counts)
 print("Total count:", total_count) 
-
-# Configure Cloudinary
-cloudinary.config(
-   cloud_name="dvord9edi",
-    api_key="323184262698784",
-    api_secret="V92mnHScgdYhjeQMWI5Dw63e8Fg"
-)
 
 # Upload image to Cloudinary inside 'AI-TakeOFF' folder
 response = cloudinary.uploader.upload(output_path, folder='AI-TakeOFF')

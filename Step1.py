@@ -4,6 +4,7 @@ import cloudinary
 import cloudinary.uploader
 import cairosvg
 import json
+from dotenv import load_dotenv
 
 def find_and_remove_duplicate_paths(svg_path, output_path):
     try:
@@ -72,11 +73,14 @@ def find_and_remove_duplicate_paths(svg_path, output_path):
         print(f"Error handling duplicate paths: {e}")
         return svg_text
 
-# Configure Cloudinary
+# Load environment variables from .env file
+load_dotenv()
+
+# Configure Cloudinary using environment variables
 cloudinary.config(
-    cloud_name="dvord9edi",
-    api_key="323184262698784",
-    api_secret="V92mnHScgdYhjeQMWI5Dw63e8Fg"
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv('CLOUDINARY_API_KEY'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET')
 )
 
 # Usage
@@ -134,3 +138,4 @@ if __name__ == "__main__":
             
     except Exception as e:
         print(f"An error occurred: {str(e)}")
+
