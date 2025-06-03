@@ -15,6 +15,7 @@ from pdf2image import convert_from_path
 import pytesseract
 import openai
 from openai import OpenAIError
+import shutil
 
 # Load environment variables from .env file
 load_dotenv()
@@ -75,15 +76,15 @@ async def download_file(download_url, output_path):
 # Function to run step scripts sequentially
 def run_step_scripts():
     step_scripts = [
-        # "Step1.py",
-        # "Step2.py",
-        # "Step3.py",
-        # "Step4.py",
-        # "Step5.py",
-        # "Step6.py",
-        # "Step7.py",
-        # "Step8.py",
-        # "Step9.py"
+        "Step1.py",
+        "Step2.py",
+        "Step3.py",
+        "Step4.py",
+        "Step5.py",
+        "Step6.py",
+        "Step7.py",
+        "Step8.py",
+        "Step9.py"
     ]
     for script in step_scripts:
         try:
@@ -236,6 +237,37 @@ def rewrite_text_with_openai(text):
         print(f"An unexpected error occurred: {str(e)}")
         return text  # Return original text if any other error occurs
 
+# Function to clean up files and directories
+
+def cleanup():
+    files_to_delete = [
+        "data.json",
+        "output.jpg",
+        "Step1.png",
+        "Step1.svg",
+        "Step2.svg",
+        "Step3.svg",
+        "Step4.svg",
+        "Step5.svg",
+        "Step6.svg",
+        "Step7.svg",
+        "Step8.svg",
+        "Step9.svg",
+        "Step6.png",
+        "Step9.png"
+    ]
+    
+    # Delete specified files
+    for file in files_to_delete:
+        if os.path.exists(file):
+            os.remove(file)
+
+    # Delete the 'files' directory
+    if os.path.exists('files'):
+        shutil.rmtree('files')
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host=host, port=port)
+    # Call cleanup after the server stops
+    cleanup()
