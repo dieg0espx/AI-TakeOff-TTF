@@ -16,7 +16,6 @@ shores_box = [
         "h -61 v 60 h 61 v -60", "h 61 v -60 h -61 v 60",
         "h -60 v 60 h 60 v -60", "h 60 v -60 h -60 v 60",
 
-        # Variations where `h` and `v` positions are swapped
         "v 60 h -61 v -60 h 61", "v 61 h -60 v -61 h 60",
         "v -60 h 61 v 60 h -61", "v -61 h 60 v 61 h -60",
         "v 60 h -60 v -60 h 60", "v 61 h -61 v -61 h 61",
@@ -47,7 +46,8 @@ frames_6x4 = [
 ]
 
 frames_5x4 = [
-    "h 300 l -300,-300 h 300",  # Original
+    # Original
+    "h 300 l -300,-300 h 300",  
 
     # Horizontal flips
     "h -300 l 300,300 h -300",  
@@ -76,7 +76,6 @@ frames_5x4 = [
     "v -300 h 300 v 300 h -300",
     "v 300 h -300 v -300 h 300"
 ]
-
 
 frames_inBox = [
     "003,525 l 003 V",

@@ -1,5 +1,9 @@
 import re
 import os
+import cloudinary
+import cloudinary.uploader
+import cairosvg
+import json
 
 def find_and_remove_duplicate_paths(svg_path, output_path):
     try:
@@ -68,11 +72,18 @@ def find_and_remove_duplicate_paths(svg_path, output_path):
         print(f"Error handling duplicate paths: {e}")
         return svg_text
 
+# Configure Cloudinary
+cloudinary.config(
+    cloud_name="dvord9edi",
+    api_key="323184262698784",
+    api_secret="V92mnHScgdYhjeQMWI5Dw63e8Fg"
+)
+
 # Usage
 if __name__ == "__main__":
     try:
         # Update the input SVG path to original.svg
-        input_svg = "original.svg"  # Assuming original.svg is one directory up from Steps
+        input_svg = "files/original.svg"  # Assuming original.svg is one directory up from Steps
         output_svg = "Step1.svg"
         
         # Check if input file exists
@@ -81,6 +92,45 @@ if __name__ == "__main__":
             print(f"Current working directory: {os.getcwd()}")
         else:
             find_and_remove_duplicate_paths(input_svg, output_svg)
+            
+        # Convert SVG to PNG using cairosvg
+        png_path = 'Step1.png'
+        try:
+            cairosvg.svg2png(url=output_svg, write_to=png_path)
+            print(f"Converted {output_svg} to {png_path}")
+        except Exception as e:
+            print(f"Error converting SVG to PNG: {e}")
+            exit(1)  # Exit if conversion fails
+
+        # Check if the PNG file exists before proceeding
+        if not os.path.exists(png_path):
+            print(f"Error: {png_path} does not exist. Exiting.")
+            exit(1)
+
+        # Upload PNG to Cloudinary inside 'AI-TakeOFF' folder
+        response = cloudinary.uploader.upload(png_path, folder='AI-TakeOFF')
+        cloudinary_url_input = response['url']
+
+        # Debugging: Print the URL to be added
+        print(f"Cloudinary URL to be added: {cloudinary_url_input}")
+
+        # Update data.json with the Cloudinary URL for input
+        data_file = "data.json"
+        if os.path.exists(data_file):
+            with open(data_file, 'r') as f:
+                data = json.load(f)
+            
+            if 'objects' not in data:
+                data['objects'] = {}
+            
+            data['objects']['input'] = cloudinary_url_input
+            
+            with open(data_file, 'w') as f:
+                json.dump(data, f, indent=4)
+            
+            print("data.json updated successfully.")
+        else:
+            print(f"Error: {data_file} does not exist.")
             
     except Exception as e:
         print(f"An error occurred: {str(e)}")

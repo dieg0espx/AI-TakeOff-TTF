@@ -1,15 +1,13 @@
 {
-    "file_name": "1OJwx3jzvCQDPMKixOObWai5daggXDnMU.pdf",
-    "file_size": 273685,
-    "extracted_text": "**Step Slab Soffit Details**\n\nSupport dimensions: 3 inches for slabs spanning up to 6 feet, with a maximum span of 8 feet. Minimum 4x6 structural members should be employed with a spacing of 19.2 inches center to center as required by design specifications.\n\nGeneral configuration includes triple layer beams positioned at 16 inches centers with the inclination standardized at 14 degrees, allowing an aligned and secure framework. Maximum permissible span is highlighted as before, however, notable exceptions are marked for critical reinforcement junctions.\n\nSpecific attention is given to the shoring plan for a first-floor suspended slab, which is effectively illustrated through detailed schematic annotations.\n\n**First Floor Suspended Slab Shoring Plan:**\n\n- Support System Specifications: Standard vertical spacing set at 1 foot.\n- Load Bearing Capacities: 150 pounds per square foot uniformly distributed; 300 pounds per square foot for concentrated loads.\n- Slab Depth Details: Typically, slabs are 8 inches deep, escalating to 20 inches in designated slab band areas, unless noted otherwise (U.N.O - Unless Noted Otherwise).\n- Structural Support Specifications: All frames to maintain a height of 6 feet by 4 feet under the main slab area, and 5 feet high under the special slab band zones.\n- Duty Grade: Heavy-duty supports rated at 10,000 pounds per leg are installed. Bracing typically spans 7 feet 0 inches unless specified differently in the plans.\n- Material Specifications: Plywood should be a minimum of 3/4 inch Douglas Fir, Grade 1 or better.\n- Usage Restrictions: 4x6 wood joists provided by TTF Scaffolding are exclusively for structural support and must not be re-purposed for other uses such as packing or cutting.\n\n**General and Specific Instructions:**\n\n- Jackson pleaded close attention to the architectural and structural drawings. All dimensions and elevation must be verified by the contractor before the shipping of equipment.\n- For steps involved above lower elevations, shoring settings should begin at the lowest point, progressively ascending under sloped sections. \n- Short wood joists, specifically those shorter than 6 feet and assembled in pairs, are also highlighted and integrated into the structure as deemed necessary by the plan.\n- A visit from a professional engineer is mandatory before concrete pouring with a minimum notice of 24 hours.\n\n**Contact and Verification:**\n\n- **TTF Scaffolding Co. Ltd.** at 10860 124th Street, Surrey, BC, V3V 4T7. Phone: 778-898-5301. Email: info@ttfscaffolding.com. Visit the company website for more information.\n- **VPL Engineering Ltd.** offers formwork design and inspection services. Contact them at (604) 644-6969. The fax number is (778) 564-1298 for document submissions.\n\n**Project Details:**\n\n- **Client:** Karvin Developments Ltd.\n- **Location for Construction:** Edwards Street, Chilliwack, B.C.\n- **Job details:** First Floor Suspended Slab Shoring Plan & details.\n- **Project Reference:** Job A-3156, Sheet F-2.\n- **Drawn by:** F.T.\n- **Date prepared:** April 10, 2021.\n\nAll the aforementioned details are outlined succinctly in Drawing F\u20141 for further reference and comprehensive guidelines.",
     "objects": {
-        "Shores Box": 0,
-        "Shores": 396,
-        "Frames 6x4": 72,
-        "Frames 5x4": 7,
-        "Frames In Box": 21,
-        "underSlab": 0
-    },
-    "modified_drawing": "https://res.cloudinary.com/dvord9edi/image/upload/v1744058987/takeOff/takeOff_20250407144946.png",
-    "original_drawing": "https://res.cloudinary.com/dvord9edi/image/upload/v1744058976/takeOff/original_takeOff_20250407144935.png"
+        "shores_Box": 28,
+        "shores": 152,
+        "frames_6x4": 88,
+        "frames_5x4": 3,
+        "frames_In_Box": 11,
+        "total_6x4": 108,
+        "output1": "http://res.cloudinary.com/dvord9edi/image/upload/v1748911566/AI-TakeOFF/tklzuwfz8vaotrw1e729.jpg",
+        "underSlab_6x4": 19,
+        "output2": "http://res.cloudinary.com/dvord9edi/image/upload/v1748911571/AI-TakeOFF/w2uckvpog9totk3atv2q.jpg"
+    }
 }

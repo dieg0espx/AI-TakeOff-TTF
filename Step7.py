@@ -1,49 +1,110 @@
-import re
-import cairosvg
+from ultralytics import YOLO
+import cv2
+import os
+import json
+import cloudinary
+import cloudinary.uploader
 
-def add_red_borders(input_file, output_file):
-    try:
-        with open(input_file, "r", encoding="utf-8") as file:
-            svg_content = file.read()
 
-        # Find elements with #70FF00
-        green_elements = re.findall(r'(<(path|text)[^>]*?style="[^"]*?(?:stroke|fill):#70ff00[^"]*?"[^>]*?>)', svg_content)
+# Define paths
+IMAGES_DIR = ""
+input_path = os.path.join(IMAGES_DIR, "Step6.png")
+output_path = os.path.join(IMAGES_DIR, "output.jpg")
 
-        # Change gray background to white
-        final_svg_content = re.sub(r'#202124', '#70ff00', svg_content)
+# Load model and image
+model = YOLO('z_model.pt')  # or your custom model
+# Set confidence threshold (0.0 to 1.0, default is 0.25)
+results = model(input_path, conf=0.12)[0]  # Adjust the 0.25 value to change tolerance
 
-        # Add a red border to each element with a frame size of 6x4
-        for element, tag in green_elements:
-            # Check if the element matches the frame 6x4 pattern
-            if re.search(r'h 300 l -300,-450 h 300|l 450,-300 v 300', element):
-                # Extract position and size (example for 'rect' elements)
-                x_match = re.search(r'x="([^\"]+)"', element)
-                y_match = re.search(r'y="([^\"]+)"', element)
-                width_match = re.search(r'width="([^\"]+)"', element)
-                height_match = re.search(r'height="([^\"]+)"', element)
+image = cv2.imread(input_path)
+class_counts = {}
 
-                x = x_match.group(1) if x_match else "0"
-                y = y_match.group(1) if y_match else "0"
-                width = width_match.group(1) if width_match else "6"
-                height = height_match.group(1) if height_match else "4"
+# First pass to count elements
+for box in results.boxes:
+    cls = int(box.cls[0])
+    label = model.names[cls]
+    class_counts[label] = class_counts.get(label, 0) + 1
 
-                # Create a red border
-                red_border = f'<rect x="{x}" y="{y}" width="{width}" height="{height}" style="stroke:#ff0000; fill:none; stroke-width:1;" />'
-                final_svg_content = final_svg_content.replace(element, element + red_border)
+# Calculate total count
+total_count = sum(class_counts.values())
 
-        # Save the modified SVG
-        with open(output_file, "w", encoding="utf-8") as file:
-            file.write(final_svg_content)
+# Update data.json with the total count
+data_file = "data.json"
+if os.path.exists(data_file):
+    with open(data_file, 'r') as f:
+        data = json.load(f)
+    
+    if 'objects' not in data:
+        data['objects'] = {}
+    
+    data['objects']['total_6x4'] = total_count
+    
+    with open(data_file, 'w') as f:
+        json.dump(data, f, indent=4)
 
-        # Convert SVG content to PNG
-        png_output_file = output_file.replace('.svg', '.png')
-        cairosvg.svg2png(bytestring=final_svg_content.encode('utf-8'), write_to=png_output_file)
+# Draw total count at the top
+text = f"Total: {total_count}"
+(text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
 
-        print(f"Modified SVG saved as {output_file}")
-        print(f"Modified PNG saved as {png_output_file}")
+# Draw background rectangle for total (keeping same position and size)
+rect_x = 10
+rect_y = 10
+rect_width = text_width + 20
+rect_height = text_height + 20
+cv2.rectangle(image, (rect_x, rect_y), (rect_x + rect_width, rect_y + rect_height), (89, 255, 0), -1)
 
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
+# Calculate text position to be centered in the rectangle
+text_x = rect_x + (rect_width - text_width) // 2
+text_y = rect_y + (rect_height + text_height) // 2
 
-if __name__ == "__main__":
-    add_red_borders("Step6.svg", "Step7.svg")
+# Draw total text
+cv2.putText(image, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+
+# Second pass to draw boxes and numbers
+element_number = 1  # Start counting from 1
+for box in results.boxes:
+    x1, y1, x2, y2 = map(int, box.xyxy[0])
+    cls = int(box.cls[0])
+    label = model.names[cls]
+
+    # Draw box
+    cv2.rectangle(image, (x1, y1), (x2, y2), (89, 255, 0), 4)
+    
+    # Put sequential number on top of the box
+    text = f"{element_number}"
+    # Get text size for background rectangle
+    (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
+    # Draw background rectangle for text
+    cv2.rectangle(image, (x1, y1 - text_height - 10), (x1 + text_width + 10, y1), (89, 255, 0), -1)
+    # Draw text
+    cv2.putText(image, text, (x1 + 5, y1 - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
+    
+    element_number += 1  # Increment the counter
+
+cv2.imwrite(output_path, image)
+print(f"✅ Processed image saved as: {output_path}")
+print("Counts:", class_counts)
+
+# Configure Cloudinary
+cloudinary.config(
+   cloud_name="dvord9edi",
+    api_key="323184262698784",
+    api_secret="V92mnHScgdYhjeQMWI5Dw63e8Fg"
+)
+
+# Upload image to Cloudinary inside 'AI-TakeOFF' folder
+response = cloudinary.uploader.upload(output_path, folder='AI-TakeOFF')
+cloudinary_url = response['url']
+
+# Update data.json with the Cloudinary URL
+if os.path.exists(data_file):
+    with open(data_file, 'r') as f:
+        data = json.load(f)
+    
+    if 'objects' not in data:
+        data['objects'] = {}
+    
+    data['objects']['output1'] = cloudinary_url
+    
+    with open(data_file, 'w') as f:
+        json.dump(data, f, indent=4)
