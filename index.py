@@ -16,6 +16,7 @@ import pytesseract
 import openai
 from openai import OpenAIError
 import shutil
+from fastapi.middleware.cors import CORSMiddleware
 
 # Load environment variables from .env file
 load_dotenv()
@@ -32,6 +33,16 @@ host = os.getenv('HOST', '127.0.0.1')
 port = int(os.getenv('PORT', 5000))
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
+
+# Enable CORS for React
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins (or specify your frontend URL)
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],  # Add this to expose WebSocket headers
+)
 
 async def start_conversion():
     url = "https://api.convertio.co/convert"
