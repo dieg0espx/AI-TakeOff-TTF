@@ -3,6 +3,20 @@ import os
 import json
 from colorama import init, Fore, Style
 from PatternComponents import shores_box, frames_6x4, frames_5x4, frames_inBox, shores
+from cairosvg import svg2png
+import cloudinary
+import cloudinary.uploader
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Configure Cloudinary using environment variables
+cloudinary.config(
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv('CLOUDINARY_API_KEY'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET')
+)
 
 def print_table(box_count, shores_count, frames6x4_count, frames5x4_count, framesinbox_count):
     # Initialize colorama
@@ -195,6 +209,36 @@ def apply_color_to_specific_paths(input_file, output_file, red="#fb0505", blue="
         # Write modified content
         with open(output_file, "w", encoding="utf-8") as file:
             file.write(modified_svg_text)
+
+        # After writing the modified SVG content
+        with open(output_file, 'rb') as svg_file:
+            svg_content = svg_file.read()
+
+        # Convert to PNG with high resolution
+        svg2png(bytestring=svg_content, write_to='Step4.png')
+        print("Successfully converted Step4.svg to Step4.png")
+
+        # Upload PNG to Cloudinary
+        response = cloudinary.uploader.upload('Step4.png', folder='AI-TakeOFF')
+        cloudinary_url_modified = response['url']
+
+        # Update data.json with the Cloudinary URL for modified_image
+        if os.path.exists('data.json'):
+            with open('data.json', 'r') as f:
+                try:
+                    data = json.load(f)
+                except json.JSONDecodeError:
+                    data = {}
+        else:
+            data = {}
+
+        # Add the URL directly at the root level
+        data['modified_drawing'] = cloudinary_url_modified
+
+        with open('data.json', 'w') as f:
+            json.dump(data, f, indent=4)
+
+        print("data.json updated successfully with modified_image URL.")
 
     except Exception as e:
         print(f"Error applying colors: {e}")

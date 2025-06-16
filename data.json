@@ -1,16 +1,18 @@
 {
-    "extracted_text": "This document pertains to the construction instructions for the shoring plan and details of the second floor suspended slab at the Anderson Commercial 5560 Anderson Way, Vernon, B.C., managed by Valorous Construction Ltd., with the plans drafted by F.T. on August 23, 2024.\n\nFor this construction, two types of slabs are proposed: a consistently recurring 10\" thick slab and an 8\" deep slab. A deeper slab band stretching 20\u201d will be utilized typically, unless explicitly noted otherwise. Each slab will need a down turn beam, measuring 10\u201d x 74\u201d. Notably, no shoring is required under the typical slab unless indicated with a \"%\" for #2 and a \u201c[x]\u201d for a #4 post shore.\n\nThe strength of the suspended slabs is rated at two levels. Slabs of 8\u2033 depth hold a typical load of 150 pounds per square foot. The 20\" deep slab bands are designed to withstand a higher load of up to 300 pounds per square foot.\n\nAlong with the slabs, the construction plan incorporates 4x6 wood joists, provided by TIF Scaffolding. These should not be used for packing or cut short for other purposes. All frames are required to be heavy-duty constructions, measuring 6' high and 4' wide, with a load of 10k per leg and supported by a 7' bracing. Additionally, 3/4\" D. Fir #1 or superior quality plywood has been prescribed.\n\nTimelines and dimensions for the construction process are critical. The length of the 10' beam between beams is divided into four segments at 19.2\" distance, anchored with 2x2x6 wood buildup under the slab. This format recurs at a 12' interval and a 10-4x6 segment, respectively.\n\nBefore the actual concrete pour, a professional engineer's inspection is compulsory as a precautionary measure. It is also reiterated that the contractor must verify all dimensions and elevations before the delivery of necessary equipment.\n\nLastly, it is crucial to lay a continuous 2-2x10 wood mudsill on compacted fill where frame legs will be set outside the building. For more information about the general notes and typical details, refer to Drawing F-1. The final technical specifications, including the instances of deviations and exceptions, will be provided in the revised blueprints. This construction document is to be read together with the architectural and structural drawings to ensure a complete understanding.",
-    "objects": {
-        "shores_Box": 28,
-        "shores": 152,
-        "frames_6x4": 88,
-        "frames_5x4": 3,
-        "frames_In_Box": 11,
-        "total_6x4": 108,
-        "output1": "http://res.cloudinary.com/dvord9edi/image/upload/v1748917037/AI-TakeOFF/nst18wn6zqgrswgghnva.jpg",
-        "underSlab_6x4": 19,
-        "output2": "http://res.cloudinary.com/dvord9edi/image/upload/v1748917041/AI-TakeOFF/dqrda8ejz9fijn9mhcwl.jpg"
-    },
+    "extracted_text": "Let's begin with the specifications for the step slabs. The soffit measures 2 inches thick, with a series of atypically arranged measurements. The general measurements include a series of 4x6 at an angle of 14 degrees, followed by lengths of 16 inches, all at the same angle. It's important to note that the maximum distance between supported slabs should not exceed 8 feet. In terms of vertical measurements, every 3 inches would be equivalent to 2 feet at the position of 6 feet from the ground level. \n\nMoving on to the first-floor suspended slab shoring plan, the scaling system used here is 1 foot equivalent to a 1-inch representation. We have two types of slabs for this plan. The typical slab is 8 inches deep. Under special conditions not stipulated, a 20-inch deep slab band could be used instead. All frames used in this setup should measure 6 feet in height by 4 feet in width under slab and 5 feet in height under slab band. These should be heavy-duty frames supporting 10,000 lbs per leg as shown. It is important to note that unless otherwise specified, no shore is needed under the slab nor slab band. \n\nThe plywood used should be a minimum of 3/4\" Douglas fir #1 or better. The 4x6 wood joists provided by TTF Scaffolding should not be used for packing or otherwise cut short for any other purpose. For more detailed information, consult the F-1 drawing. Prior to concrete pouring, an inspection is crucial and must be performed by the undersigned professional engineer with a prior notice time of no less than 24 hours. \n\nIt's crucial to verify all dimensions and elevations before the equipment is shipped. Under stair shoring setup should start at the lowest elevation and be built up under slops typically. This plan includes a series of 2-2x6 wood joist situated 19.2 inches on center.\n\nAll specifications outlined in the technical drawings must be incorporated not just with construction details but also in alignment with architectural and structural drawings. \n\nThis project, referred to as the First Floor Suspended Slab Shoring Plan and Details, was put together by TTF Scaffolding Co. Ltd, in collaboration with VPL Engineering Ltd. The job was contracted by Karvin Developments LTD for Edwards Street Condos located at 9194 Edwards Street, Chilliwack, B.C. The final technical drawings were prepared on April 10, 2021. For further inquiries or clarifications, you may contact our office at 778 898 5301 or visit our website at www.ttfscaffolding.com.",
     "file_name": "files/original.pdf",
-    "file_size": 415491
+    "file_size": 273685,
+    "original_drawing": "http://res.cloudinary.com/dvord9edi/image/upload/v1748934472/AI-TakeOFF/lmak1sd47rnwsfcwg6b1.png",
+    "objects": {
+        "shores_Box": 0,
+        "shores": 396,
+        "frames_6x4": 72,
+        "frames_5x4": 7,
+        "frames_In_Box": 21,
+        "total_6x4": 88,
+        "output1": "http://res.cloudinary.com/dvord9edi/image/upload/v1748934479/AI-TakeOFF/u4whafqcu7okzjihgzfh.jpg",
+        "underSlab_6x4": 43,
+        "output2": "http://res.cloudinary.com/dvord9edi/image/upload/v1748934483/AI-TakeOFF/a4ttmc97gwsflgcunsod.jpg"
+    },
+    "modified_drawing": "http://res.cloudinary.com/dvord9edi/image/upload/v1748934474/AI-TakeOFF/brfb3okkiwixw81zbgrq.png"
 }

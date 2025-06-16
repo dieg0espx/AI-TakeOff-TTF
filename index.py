@@ -2,7 +2,7 @@
 # to test: curl -X GET "http://127.0.0.1:5000/AI-Takeoff/1q-2eMWfbQx8ZlE_8EJFt-X_RTRmwfDVW"
 # to test: curl -X GET "http://127.0.0.1:5000/AI-Takeoff/1mApCM33bj2t4pg5mV-8u3FOWEPnr6hE6"
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 import requests
 import os
 from typing import Optional
@@ -17,6 +17,7 @@ import openai
 from openai import OpenAIError
 import shutil
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 # Load environment variables from .env file
 load_dotenv()
@@ -107,7 +108,7 @@ def run_step_scripts():
             raise Exception(f"Step failed: {script}")
 
 @app.get("/AI-Takeoff/{file_id}")
-async def download_document(file_id: str):
+async def download_document(file_id: str, background_tasks: BackgroundTasks):
     try:
         print(f"Attempting to download file with ID: {file_id}")
         
@@ -167,7 +168,10 @@ async def download_document(file_id: str):
         data['file_name'] = file_path
         data['file_size'] = os.path.getsize(file_path)
 
-        return data;
+        # Create a response object
+        response = JSONResponse(content=data)
+
+        return response
 
     except requests.exceptions.RequestException as e:
         print(f"Request error: {str(e)}")
@@ -248,37 +252,8 @@ def rewrite_text_with_openai(text):
         print(f"An unexpected error occurred: {str(e)}")
         return text  # Return original text if any other error occurs
 
-# Function to clean up files and directories
 
-def cleanup():
-    files_to_delete = [
-        "data.json",
-        "output.jpg",
-        "Step1.png",
-        "Step1.svg",
-        "Step2.svg",
-        "Step3.svg",
-        "Step4.svg",
-        "Step5.svg",
-        "Step6.svg",
-        "Step7.svg",
-        "Step8.svg",
-        "Step9.svg",
-        "Step6.png",
-        "Step9.png"
-    ]
-    
-    # Delete specified files
-    for file in files_to_delete:
-        if os.path.exists(file):
-            os.remove(file)
-
-    # Delete the 'files' directory
-    if os.path.exists('files'):
-        shutil.rmtree('files')
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host=host, port=port)
-    # Call cleanup after the server stops
-    cleanup()

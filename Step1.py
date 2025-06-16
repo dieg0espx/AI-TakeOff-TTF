@@ -118,16 +118,14 @@ if __name__ == "__main__":
         # Debugging: Print the URL to be added
         print(f"Cloudinary URL to be added: {cloudinary_url_input}")
 
-        # Update data.json with the Cloudinary URL for input
+        # Update data.json with the Cloudinary URL for originalDrawing
         data_file = "data.json"
         if os.path.exists(data_file):
             with open(data_file, 'r') as f:
                 data = json.load(f)
             
-            if 'objects' not in data:
-                data['objects'] = {}
-            
-            data['objects']['input'] = cloudinary_url_input
+            # Add the URL directly at the root level
+            data['original_drawing'] = cloudinary_url_input
             
             with open(data_file, 'w') as f:
                 json.dump(data, f, indent=4)

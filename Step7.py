@@ -6,8 +6,11 @@ import cloudinary
 import cloudinary.uploader
 from dotenv import load_dotenv
 
+print("1. Starting Step7.py...")
+
 # Load environment variables from .env file
 load_dotenv()
+print("2. Environment variables loaded")
 
 # Configure Cloudinary using environment variables
 cloudinary.config(
@@ -15,20 +18,52 @@ cloudinary.config(
     api_key=os.getenv('CLOUDINARY_API_KEY'),
     api_secret=os.getenv('CLOUDINARY_API_SECRET')
 )
+print("3. Cloudinary configured")
 
 # Define paths
 IMAGES_DIR = ""
 input_path = os.path.join(IMAGES_DIR, "Step6.png")
 output_path = os.path.join(IMAGES_DIR, "output.jpg")
+print(f"4. Input path: {input_path}")
+print(f"5. Output path: {output_path}")
 
+# Check if input file exists
+if not os.path.exists(input_path):
+    print(f"ERROR: Input file not found at {input_path}")
+    exit(1)
+
+print("6. Loading YOLO model...")
 # Load model and image
-model = YOLO('z_model.pt')  # or your custom model
-# Set confidence threshold (0.0 to 1.0, default is 0.25)
-results = model(input_path, conf=0.12)[0]  # Adjust the 0.25 value to change tolerance
+try:
+    model = YOLO('z_model.pt')  # or your custom model
+    print("7. YOLO model loaded successfully")
+except Exception as e:
+    print(f"ERROR loading YOLO model: {str(e)}")
+    exit(1)
 
-image = cv2.imread(input_path)
+print("8. Loading input image...")
+try:
+    image = cv2.imread(input_path)
+    if image is None:
+        print(f"ERROR: Could not read image from {input_path}")
+        exit(1)
+    print("9. Input image loaded successfully")
+except Exception as e:
+    print(f"ERROR loading image: {str(e)}")
+    exit(1)
+
+print("10. Running model prediction...")
+try:
+    # Set confidence threshold (0.0 to 1.0, default is 0.25)
+    results = model(input_path, conf=0.12)[0]  # Adjust the 0.25 value to change tolerance
+    print("11. Model prediction completed")
+except Exception as e:
+    print(f"ERROR during model prediction: {str(e)}")
+    exit(1)
+
 class_counts = {}
 
+print("12. Processing detection boxes...")
 # First pass to count elements
 for box in results.boxes:
     cls = int(box.cls[0])
@@ -37,7 +72,9 @@ for box in results.boxes:
 
 # Calculate total count
 total_count = sum(class_counts.values())
+print(f"13. Total count: {total_count}")
 
+print("14. Updating data.json...")
 # Update data.json with the total count
 data_file = "data.json"
 if os.path.exists(data_file):
@@ -51,7 +88,9 @@ if os.path.exists(data_file):
     
     with open(data_file, 'w') as f:
         json.dump(data, f, indent=4)
+    print("15. data.json updated successfully")
 
+print("16. Drawing boxes and labels...")
 # Draw total count at the top
 text = f"Total: {total_count}"
 (text_width, text_height), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
@@ -91,14 +130,27 @@ for box in results.boxes:
     
     element_number += 1  # Increment the counter
 
-cv2.imwrite(output_path, image)
-print(f"✅ Processed image saved as: {output_path}")
+print("17. Saving output image...")
+try:
+    cv2.imwrite(output_path, image)
+    print(f"18. Processed image saved as: {output_path}")
+except Exception as e:
+    print(f"ERROR saving output image: {str(e)}")
+    exit(1)
+
 print("Counts:", class_counts)
 
-# Upload image to Cloudinary inside 'AI-TakeOFF' folder
-response = cloudinary.uploader.upload(output_path, folder='AI-TakeOFF')
-cloudinary_url = response['url']
+print("19. Uploading to Cloudinary...")
+try:
+    # Upload image to Cloudinary inside 'AI-TakeOFF' folder
+    response = cloudinary.uploader.upload(output_path, folder='AI-TakeOFF')
+    cloudinary_url = response['url']
+    print("20. Upload to Cloudinary successful")
+except Exception as e:
+    print(f"ERROR uploading to Cloudinary: {str(e)}")
+    exit(1)
 
+print("21. Updating data.json with Cloudinary URL...")
 # Update data.json with the Cloudinary URL
 if os.path.exists(data_file):
     with open(data_file, 'r') as f:
@@ -111,3 +163,6 @@ if os.path.exists(data_file):
     
     with open(data_file, 'w') as f:
         json.dump(data, f, indent=4)
+    print("22. data.json updated with Cloudinary URL")
+
+print("23. Step7.py completed successfully!")
