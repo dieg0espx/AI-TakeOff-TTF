@@ -46,7 +46,10 @@ frames_6x4 = [
 ]
 
 frames_5x4 = [
-    # Original
+
+    "-300,-300 h 300",
+    "h 300 l -300,-299",
+
     "h 300 l -300,-300 h 300",  
 
     # Horizontal flips
@@ -75,6 +78,13 @@ frames_5x4 = [
     "h -300 v 300 h 300 v -300",
     "v -300 h 300 v 300 h -300",
     "v 300 h -300 v -300 h 300"
+
+    # ADDITIONALS
+   "-300,-300 h 300"
+
+
+
+
 ]
 
 frames_inBox = [
